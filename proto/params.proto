@@ -1,0 +1,30 @@
+syntax = "proto3";
+package params;
+option go_package = "keymv.io/proto/params";
+
+//Define response body
+message RequestParam {
+  string param = 1;
+  string customValues = 2;
+  string authToken = 3;
+}
+
+message ResponseParam {
+  string requestId = 1;
+  string paramValue = 2;
+  string fromAppliedPolicyId = 3;  
+}
+
+message RequestParams {
+  string param = 1;
+}
+
+message ResponseParams {
+  int32 requestId = 1;
+  string paramValue = 2;
+  string fromAppliedPolicyId = 3;  
+}
+
+service ParamReader {
+  rpc getParam(RequestParam) returns (ResponseParam) {}
+}
