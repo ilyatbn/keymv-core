@@ -9,7 +9,7 @@ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=p
 ```
 
 Before you go get a private repo you need to set this shit:
-export GOPRIVATE=github.com/ilyatbn/keymv-proto
+export GOPRIVATE=github.com/ilyatbn/keymv-proto  
 go get github.com/ilyatbn/keymv-proto/core
 
 

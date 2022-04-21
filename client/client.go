@@ -4,23 +4,24 @@ import (
 	"log"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"github.com/ilyatbn/keymv-proto/authengine"
+	"os"
 )
 
-func Auth(server string) {
-
+func Authenticate(server string, token string, refId string) (string){
+	//figure out a way to use a global logger instead of creating new ones each time
+	logger := log.New(os.Stdout, refId+" ", log.LstdFlags|log.Lmsgprefix)
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(server, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %s", err)
+		logger.Fatalf("did not connect: %s", err)
 	}
 	defer conn.Close()
-
-	c := chat.NewChatServiceClient(conn)
-
-	response, err := c.SayHello(context.Background(), &chat.Message{Body: "Hello From Client!"})
+	c := auth.NewAuthEngineClient(conn)
+	response, err := c.Auth(context.Background(), &auth.Request{RequestId: refId, AuthToken: token})
 	if err != nil {
-		log.Fatalf("Error when calling SayHello: %s", err)
+		logger.Printf("Error requesting authentication:%s", err)
+		return ""
 	}
-	log.Printf("Response from server: %s", response.Body)
-
+	return response.Orgid
 }

@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"net"
-	"github.com/ilyatbn/keymv-proto/core"
 	"google.golang.org/grpc"
+	"github.com/ilyatbn/keymv-core/params"
+	paramsengine "github.com/ilyatbn/keymv-proto/core"
 )
 
 func main() {
@@ -15,7 +16,7 @@ func main() {
 	}
 	paramServer := params.Server{}
 	grpcServer := grpc.NewServer()
-	params.RegisterParamReaderServer(grpcServer, &paramServer)
+	paramsengine.RegisterParamReaderServer(grpcServer, &paramServer)
 	log.Printf("Listening on 0.0.0.0"+listenPort)
 
 	if err := grpcServer.Serve(lis); err != nil {
