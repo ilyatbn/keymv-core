@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net"
-	"keymv.io/core/proto"
+	"github.com/ilyatbn/keymv-proto/core"
 	"google.golang.org/grpc"
 )
 
