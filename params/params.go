@@ -3,14 +3,15 @@ package params
 import (
 	"log"
 	"os"
+
+	grpc_client "github.com/ilyatbn/keymv-core/client"
+	params "github.com/ilyatbn/keymv-proto/core"
+	"github.com/lithammer/shortuuid/v4"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
-	"github.com/lithammer/shortuuid/v4"
-	"github.com/ilyatbn/keymv-proto/core"
-	"github.com/ilyatbn/keymv-core/client"
 )
 
 type Server struct {
@@ -23,7 +24,6 @@ var authenticationServiceServer string = "localhost:49001"
 // func ParseMetadata(ctx context.Context, logger *log.Logger)  {
 // 	md, ok := metadata.FromIncomingContext(ctx)
 // }
-
 
 func (s *Server) GetParam(ctx context.Context, in *params.RequestParam) (*params.ResponseParam, error) {
 	logger := log.New(os.Stdout, shortuuid.New()+" ", log.LstdFlags|log.Lmsgprefix)
@@ -42,17 +42,18 @@ func (s *Server) GetParam(ctx context.Context, in *params.RequestParam) (*params
 		ip := ip.Addr.String()
 		logger.Printf("Source IP: %s", ip)
 	}
-	
-	val,err := grpc_client.Validate(authenticationServiceServer, in.AuthToken, logger.Prefix())
-	if err!=nil {
+
+	val, err := grpc_client.Validate(authenticationServiceServer, in.AuthToken, logger.Prefix())
+	if err != nil {
+		logger.Printf(err.Error())
+		return nil, status.Errorf(codes.Internal, err.Error())
+	} else {
 		if val.Valid == "true" {
-			logger.Printf("Authenticated to orgId:%v",val.OrgId)
-		}else {
-			msg := "Error authenticating to server. Please check your token and try again."
+			logger.Printf("Authenticated to orgId:%v", val.OrgId)
+		} else {
+			msg := "Error authenticating to server. Please check your token."
 			return nil, status.Errorf(codes.Unauthenticated, msg)
 		}
-	} else {
-		logger.Printf("Something bad happened.")
 	}
 
 	//policy := Send headers,ip and requestId to PolicyChecker? (Client Stream)
