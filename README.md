@@ -15,5 +15,6 @@ go get github.com/ilyatbn/keymv-proto/core
 
 
 ToDo
-- Implement SSL
--
+- Implement SSL everywhere. Client certificate authentication to core (generated per user and orgwide).
+- Implement Global logger for all functions (Zap)
+- start working on Orm and database schema (Scylla+Mongo?).

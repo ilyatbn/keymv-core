@@ -43,16 +43,17 @@ func (s *Server) GetParam(ctx context.Context, in *params.RequestParam) (*params
 		logger.Printf("Source IP: %s", ip)
 	}
 	
-	val := grpc_client.Authenticate(authenticationServiceServer, in.AuthToken, logger.Prefix())
-	
-	if len(val)>0{
-		logger.Println("Authenticated to orgId:",val)
-	}else {
-		//return unauthenticated
-		msg := "Error authenticating to server. Please check your token and try again."
-		return nil, status.Errorf(codes.Unauthenticated, msg)
+	val,err := grpc_client.Validate(authenticationServiceServer, in.AuthToken, logger.Prefix())
+	if err!=nil {
+		if val.Valid == "true" {
+			logger.Printf("Authenticated to orgId:%v",val.OrgId)
+		}else {
+			msg := "Error authenticating to server. Please check your token and try again."
+			return nil, status.Errorf(codes.Unauthenticated, msg)
+		}
+	} else {
+		logger.Printf("Something bad happened.")
 	}
-	
 
 	//policy := Send headers,ip and requestId to PolicyChecker? (Client Stream)
 
